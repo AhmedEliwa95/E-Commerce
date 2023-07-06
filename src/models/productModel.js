@@ -72,6 +72,21 @@ const productSchema = new mongoose.Schema(
   }
 );
 
+productSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "category",
+    select: "name",
+  })
+    .populate({
+      path: "subCategory",
+      select: "name",
+    })
+    .populate({
+      path: "brand",
+      select: "name",
+    });
+  next();
+});
 const Product = mongoose.model("Product", productSchema);
 
 module.exports = Product;
