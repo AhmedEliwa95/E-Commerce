@@ -39,7 +39,7 @@ exports.getProduct = asyncHandler(async (req, res, next) => {
 // @access    Private
 
 exports.createProduct = asyncHandler(async (req, res, next) => {
-  req.body.slug = slugify(req.body.name, { lower: true });
+  req.body.slug = slugify(req.body.title, { lower: true });
 
   const product = await Product.create(req.body);
 
@@ -50,7 +50,7 @@ exports.createProduct = asyncHandler(async (req, res, next) => {
 // @route:    PUT /api/v1/products
 // @access    Private
 exports.updateProduct = asyncHandler(async (req, res, next) => {
-  req.body.slug = slugify(req.body.name, { lower: true });
+  req.body.slug = slugify(req.body.title, { lower: true });
   const { id } = req.params;
   const product = await Product.findOneAndUpdate({ _id: id }, req.body, {
     new: true,
