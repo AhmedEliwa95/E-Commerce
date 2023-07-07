@@ -1,5 +1,8 @@
 const { check } = require("express-validator");
 const validatorMiddleware = require("../../middlewares/validator");
+const Category = require("../../models/categoryModel");
+const SubCategory = require("../../models/subCategoryModel");
+// const APIError = require("../apiError");
 
 exports.getProductValidator = [
   check("id").isMongoId().withMessage("Invalid Product ID"),
@@ -57,11 +60,89 @@ exports.createProductValidator = [
     .notEmpty()
     .withMessage("Product category should be required")
     .isMongoId()
-    .withMessage("Invalid CategoryId for this product"),
-  check("subCategory")
+    .withMessage("Invalid CategoryId for this product")
+    .custom(async (value) => {
+      const categoryExist = await Category.findById(value);
+      if (!categoryExist) {
+        throw new Error(`No Category with this ID: ${value}`);
+      }
+    }),
+  check("subCategories")
     .optional()
     .isMongoId()
-    .withMessage("Invalid subCategoryId for this product"),
+    .withMessage("Invalid subCategoryId for this product")
+    .custom(
+      (
+        subCategoriesIds /// to check the existance of these subCategories
+      ) =>
+        SubCategory.find({
+          _id: { $exists: true, $in: subCategoriesIds },
+        }).then((result) => {
+          // console.log({ result }); // Array result of valid IDs
+          if (result.length < 1 || result.length !== subCategoriesIds.length) {
+            return Promise.reject(
+              new Error(`Invalid subCategoriesIds: ${subCategoriesIds}`)
+            );
+          }
+        })
+    )
+    .custom((val, { req }) =>
+      SubCategory.find({ category: req.body.category }).then(
+        (subCategories) => {
+          const subCategoriesIdsInDB = [];
+
+          subCategories.forEach((subCategory) =>
+            subCategoriesIdsInDB.push(subCategory._id.toString())
+          );
+
+          if (!val.every((v) => subCategoriesIdsInDB.includes(v))) {
+            return Promise.reject(
+              new Error(
+                `Invalid subCategories which not belong to the right parent Category`
+              )
+            );
+          }
+        }
+      )
+    ),
+  // .custom(async (val, { req }) => { /// it's working and I don't know how
+  //   const subCategoriesOfCategory = await SubCategory.find({
+  //     category: req.body.category,
+  //   });
+  //   console.log(subCategoriesOfCategory.toString());
+  //   val.forEach((element) => {
+  //     if (!subCategoriesOfCategory.toString().includes(element)) {
+  //       // console.log(subCategoriesOfCategory.includes(element));
+  //       throw new Error(`SubCategoriesIds not belong to the parent Category`);
+  //     }
+  //   });
+  // }),
+  // .custom((val, { req }) =>
+  //   SubCategory.find({ category: req.body.category }).then(
+  //     (subCategoriesOfCategory) => {
+  //       val.forEach((element) => {
+  //         if (!subCategoriesOfCategory.includes(element)) {
+  //           return Promise.reject(
+  //             new Error(`SubCategoriesIds not belong to the parent Category`)
+  //           );
+  //         }
+  //       });
+  //     }
+  //   )
+  // )
+  // .custom((arr) => {
+  //   arr.forEach(async (element) => {
+  //     const subCategory = await SubCategory.findById(element);
+  //     // console.log(subCategory);
+  //     if (!subCategory) {
+  //       return new APIError(
+  //         `No SubCategory form Throw with this ID: ${element}`,
+  //         404
+  //       );
+  //       // throw new Error(`No SubCategory with this ID: ${element}`);
+  //     }
+  //   });
+  // })
   check("brand")
     .optional()
     .isMongoId()

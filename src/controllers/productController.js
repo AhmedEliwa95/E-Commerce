@@ -50,7 +50,9 @@ exports.createProduct = asyncHandler(async (req, res, next) => {
 // @route:    PUT /api/v1/products
 // @access    Private
 exports.updateProduct = asyncHandler(async (req, res, next) => {
-  req.body.slug = slugify(req.body.title, { lower: true });
+  if (req.body.title) {
+    req.body.slug = slugify(req.body.title, { lower: true });
+  }
   const { id } = req.params;
   const product = await Product.findOneAndUpdate({ _id: id }, req.body, {
     new: true,
