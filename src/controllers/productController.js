@@ -8,12 +8,60 @@ const Product = require("../models/productModel");
 // @route:   GET /api/v1/products
 // @access:  Public
 exports.getProducts = asyncHandler(async (req, res, next) => {
+  // 1-)Filtering
+  const queryStringObj = { ...req.query };
+  const excludeFields = ["page", "sort", "limit", "fields"];
+  excludeFields.forEach((field) => delete queryStringObj[field]);
+
+  // Advanced Filtering, Appling greater & less than operator [gte] , [lt] , [lte] .....
+  let queryStr = JSON.stringify(queryStringObj);
+  queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (oper) => `$${oper}`);
+
+  // console.log(req.query);
+  // console.log(queryStringObj);
+  // console.log(JSON.parse(queryStr));
+  // 2-) Pagination
   const page = req.query.page || 1;
   const limit = req.query.limit || 10;
   const skip = (page - 1) * limit;
 
-  const products = await Product.find().limit(limit).skip(skip);
+  /// Build Mongoose Query or building the query, so we will remove await
+  let mongooseQuery = Product.find(JSON.parse(queryStr))
+    .limit(limit)
+    .skip(skip);
 
+  // 4-) Sorting
+  if (req.query.sort) {
+    const sortBy = req.query.sort.split(",").join(" ");
+    mongooseQuery = mongooseQuery.sort(sortBy);
+  } else {
+    mongooseQuery = mongooseQuery.sort("createdAt");
+  }
+
+  // 5-) Field Limiting: to make the frontend call only essential fields for the client side
+  if (req.query.fields) {
+    const fields = req.query.fields.split(",").join(" ");
+    mongooseQuery = mongooseQuery.select(fields);
+  } else {
+    mongooseQuery = mongooseQuery.select("-__v");
+  }
+
+  // 6-) Searching
+  if (req.query.keyword) {
+    const query = {
+      title: { $regex: `/${req.query.keyword}/`, $options: "i" },
+    };
+    // query.$or = [
+    //   { title: { $regex: `/^${req.query.keyword}/`, $options: "i" } },
+    //   { description: { $regex: `/${req.query.keyword}/`, $options: "i" } },
+    // ];
+    console.log(JSON.stringify(query));
+
+    mongooseQuery = mongooseQuery.find(query);
+  }
+
+  /// Excute the mongoose query
+  const products = await mongooseQuery;
   res.status(200).json({
     results: products.length,
     page,

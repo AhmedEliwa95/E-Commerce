@@ -4,7 +4,7 @@ const dotenv = require("dotenv");
 const Product = require("../../models/productModel");
 const dbConnection = require("../../../config/database");
 
-dotenv.config({ path: "../../config.env" });
+dotenv.config({ path: "../../../config/config.env" });
 
 // connect to DB
 dbConnection();
@@ -17,7 +17,7 @@ const insertData = async () => {
   try {
     await Product.create(products);
 
-    console.log("Data Inserted".green.inverse);
+    console.log("Data Inserted");
     process.exit();
   } catch (error) {
     console.log(error);
@@ -28,7 +28,7 @@ const insertData = async () => {
 const destroyData = async () => {
   try {
     await Product.deleteMany();
-    console.log("Data Destroyed".red.inverse);
+    console.log("Data Destroyed");
     process.exit();
   } catch (error) {
     console.log(error);
@@ -41,3 +41,5 @@ if (process.argv[2] === "-i") {
 } else if (process.argv[2] === "-d") {
   destroyData();
 }
+
+console.log(process.argv[2]);
