@@ -4,7 +4,7 @@ const slugify = require("slugify");
 const APIError = require("../utils/apiError");
 const Product = require("../models/productModel");
 const APIFeatures = require("../utils/APIFeature");
-
+const factory = require("../utils/handlerFactory");
 // @desc:    Get List of products
 // @route:   GET /api/v1/products
 // @access:  Public
@@ -122,12 +122,13 @@ exports.updateProduct = asyncHandler(async (req, res, next) => {
 // @desc:     Delete Product
 // @route:    DELETE /api/v1/products
 // @access    Private
-exports.deleteProduct = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-  const product = await Product.findOneAndDelete({ _id: id });
+exports.deleteProduct = factory.deleteOne(Product);
+// asyncHandler(async (req, res, next) => {
+//   const { id } = req.params;
+//   const product = await Product.findOneAndDelete({ _id: id });
 
-  if (!product) {
-    next(new APIError(`no product with this ID: ${id}`, 404));
-  }
-  res.status(204).send();
-});
+//   if (!product) {
+//     next(new APIError(`no product with this ID: ${id}`, 404));
+//   }
+//   res.status(204).send();
+// });

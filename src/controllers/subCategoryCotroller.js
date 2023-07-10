@@ -2,6 +2,7 @@ const asyncHandler = require("express-async-handler");
 const slugify = require("slugify");
 const SubCategory = require("../models/subCategoryModel");
 const APIError = require("../utils/apiError");
+const factory = require("../utils/handlerFactory");
 
 // middleware before the validator to use the get the category from the categoryId
 exports.setCategoryIdToBody = (req, res, next) => {
@@ -91,17 +92,18 @@ module.exports.updateSubCategory = asyncHandler(async (req, res, next) => {
 // @desc:     Delete Specific subCategory
 // @route:    DELTE /api/v1/subCategories/:id
 // @access    Private
-module.exports.deleteSubCategory = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-  const subCategory = await SubCategory.findOneAndDelete({ _id: id });
-  if (!subCategory) {
-    return next(new APIError(`No SubCategory with this ID: ${id}`, 404));
-  }
+module.exports.deleteSubCategory = factory.deleteOne(SubCategory);
+// asyncHandler(async (req, res, next) => {
+//   const { id } = req.params;
+//   const subCategory = await SubCategory.findOneAndDelete({ _id: id });
+//   if (!subCategory) {
+//     return next(new APIError(`No SubCategory with this ID: ${id}`, 404));
+//   }
 
-  res.status(204).send({
-    data: subCategory,
-  });
-});
+//   res.status(204).send({
+//     data: subCategory,
+//   });
+// });
 
 // @desc:     Get subCategories for specific category
 // @route:    GET /api/v1/caregory/categoryId/subcategories  :: Nested Route
