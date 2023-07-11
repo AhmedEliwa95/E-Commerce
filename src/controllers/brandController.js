@@ -1,8 +1,6 @@
 /* eslint-disable import/order */
-const slugify = require("slugify");
 const Brand = require("../models/brandModel");
 const asyncHandler = require("express-async-handler");
-const APIError = require("../utils/apiError");
 const APIFeatures = require("../utils/APIFeature");
 const factory = require("../utils/handlerFactory");
 
@@ -34,15 +32,7 @@ exports.getBrands = asyncHandler(async (req, res) => {
 // @desc     Get Specific Brand By ID
 // @route    GET api/v1/brands/:id
 // @access   Private
-exports.getBrand = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-  const brand = await Brand.findById(id);
-
-  if (!brand) {
-    return next(new APIError(`no Brand with this ID: ${id}`, 404));
-  }
-  res.status(200).send({ data: brand });
-});
+exports.getBrand = factory.getOne(Brand);
 
 // @desc:     Create Brand
 // @route:    POST /api/v1/brands

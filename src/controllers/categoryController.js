@@ -1,8 +1,6 @@
 /* eslint-disable import/order */
-const slugify = require("slugify");
 const Category = require("../models/categoryModel");
 const asyncHandler = require("express-async-handler");
-const APIError = require("../utils/apiError");
 const factory = require("../utils/handlerFactory");
 
 // @desc:    Get List of Categories
@@ -27,15 +25,7 @@ exports.getCategories = asyncHandler(async (req, res) => {
 // @desc     Get Specific Category By ID
 // @route    GET api/v1/categories/:id
 // @access   Private
-exports.getCategory = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-  const category = await Category.findById(id);
-
-  if (!category) {
-    return next(new APIError(`no category with this ID: ${id}`, 404));
-  }
-  res.status(200).send({ data: category });
-});
+exports.getCategory = factory.getOne(Category);
 
 // @desc:     Create Category
 // @route:    POST /api/v1/categories

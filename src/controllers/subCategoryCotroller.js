@@ -1,7 +1,6 @@
 const asyncHandler = require("express-async-handler");
-const slugify = require("slugify");
 const SubCategory = require("../models/subCategoryModel");
-const APIError = require("../utils/apiError");
+// const APIError = require("../utils/apiError");
 const factory = require("../utils/handlerFactory");
 
 // middleware before the validator to use the get the category from the categoryId
@@ -47,17 +46,7 @@ module.exports.getSubCategories = asyncHandler(async (req, res) => {
 // @desc:     Get Specific subCategory
 // @route:    get /api/v1/subCategories/:id
 // @access    Public
-module.exports.getSubCategory = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-  const subCategory = await SubCategory.findById(id);
-  if (!subCategory) {
-    return next(new APIError(`No SubCategory with this ID: ${id}`, 404));
-  }
-
-  res.status(200).send({
-    data: subCategory,
-  });
-});
+module.exports.getSubCategory = factory.getOne(SubCategory);
 
 // @desc:     Update Specific subCategory
 // @route:    PUT /api/v1/subCategories/:id

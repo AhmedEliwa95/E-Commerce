@@ -1,7 +1,5 @@
 // eslint-disable-next-line import/order
 const asyncHandler = require("express-async-handler");
-const slugify = require("slugify");
-const APIError = require("../utils/apiError");
 const Product = require("../models/productModel");
 const APIFeatures = require("../utils/APIFeature");
 const factory = require("../utils/handlerFactory");
@@ -79,15 +77,7 @@ exports.getProducts = asyncHandler(async (req, res, next) => {
 // @desc     Get Specific Product By ID
 // @route    GET api/v1/products/:id
 // @access   public
-exports.getProduct = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-  const product = await Product.findById(id);
-
-  if (!product) {
-    return next(new APIError(`no product with this ID: ${id}`, 404));
-  }
-  res.status(200).send({ data: product });
-});
+exports.getProduct = factory.getOne(Product);
 
 // @desc:     Create Product
 // @route:    POST /api/v1/products
