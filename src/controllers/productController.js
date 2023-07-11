@@ -93,13 +93,7 @@ exports.getProduct = asyncHandler(async (req, res, next) => {
 // @route:    POST /api/v1/products
 // @access    Private
 
-exports.createProduct = asyncHandler(async (req, res, next) => {
-  req.body.slug = slugify(req.body.title, { lower: true });
-
-  const product = await Product.create(req.body);
-
-  res.status(201).send({ data: product });
-});
+exports.createProduct = factory.createOne(Product);
 
 // @desc:     Update Product
 // @route:    PUT /api/v1/products

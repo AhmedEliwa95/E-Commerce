@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const { default: slugify } = require("slugify");
 
 const subCategorySchema = new mongoose.Schema(
   {

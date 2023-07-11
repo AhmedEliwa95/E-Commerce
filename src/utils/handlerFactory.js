@@ -31,3 +31,10 @@ exports.updateOne = (Model) =>
 
     res.status(200).send({ data: updatedDocument });
   });
+
+exports.createOne = (Model) =>
+  asyncHandler(async (req, res) => {
+    const document = new Model(req.body);
+    await document.save();
+    res.status(201).send({ data: document });
+  });

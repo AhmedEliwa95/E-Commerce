@@ -13,14 +13,7 @@ exports.setCategoryIdToBody = (req, res, next) => {
 // @route:    POST /api/v1/subCategories
 // @access    Private
 // @route:    POST /api/v1/categories/categoryId/subcategories : to Create subCategories for category by nestedRoute
-module.exports.createSubCategory = asyncHandler(async (req, res, next) => {
-  const { name, category } = req.body;
-  const slug = slugify(name, { lower: true });
-
-  const subCategory = await SubCategory.create({ name, slug, category });
-
-  res.status(201).json({ data: subCategory });
-});
+module.exports.createSubCategory = factory.createOne(SubCategory);
 
 exports.createFilterObj = (req, res, next) => {
   let filterObject = {};

@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { default: slugify } = require("slugify");
+const slugify = require("slugify");
 
 const productSchema = new mongoose.Schema(
   {
@@ -12,7 +12,7 @@ const productSchema = new mongoose.Schema(
     },
     slug: {
       type: String,
-      required: true,
+      // required: true,
       lowercase: true,
     },
     description: {
@@ -73,8 +73,13 @@ const productSchema = new mongoose.Schema(
   }
 );
 
+// productSchema.pre("save", function (next) {
+//   this.slug = slugify(this.title, { lower: true });
+//   // this.slug = this.title.split(" ").join("-").toLowerCase();
+//   next();
+// });
 productSchema.pre("save", function (next) {
-  this.slug = this.title.split(" ").join("-").toLowerCase();
+  this.slug = slugify(this.title, { lower: true });
   next();
 });
 
