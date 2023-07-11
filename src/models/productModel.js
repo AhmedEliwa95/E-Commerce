@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { default: slugify } = require("slugify");
 
 const productSchema = new mongoose.Schema(
   {
@@ -71,6 +72,10 @@ const productSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+productSchema.pre("save", () => {
+  this.slug = slugify(this.title, { lower: true });
+});
 
 productSchema.pre(/^find/, function (next) {
   this.populate({

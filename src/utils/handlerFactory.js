@@ -13,3 +13,21 @@ exports.deleteOne = (Model) =>
 
     res.status(204).send();
   });
+
+exports.updateOne = (Model) =>
+  asyncHandler(async (req, res, next) => {
+    const updatedDocument = await Model.findOneAndUpdate(
+      { _id: req.params.id },
+      req.body,
+      { new: true, runValidators: true }
+    );
+
+    updatedDocument.save();
+    if (!updatedDocument) {
+      return next(
+        new APIError(`No Document with this ID: ${req.params.id}`, 404)
+      );
+    }
+
+    res.status(200).send({ data: updatedDocument });
+  });

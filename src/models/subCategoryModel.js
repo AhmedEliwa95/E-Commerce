@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { default: slugify } = require("slugify");
 
 const subCategorySchema = new mongoose.Schema(
   {
@@ -33,4 +34,9 @@ subCategorySchema.pre(/^find/, function (next) {
   });
   next();
 });
+
+subCategorySchema.pre("save", () => {
+  this.slug = slugify(this.title, { lower: true });
+});
+
 module.exports = mongoose.model("SubCategory", subCategorySchema);

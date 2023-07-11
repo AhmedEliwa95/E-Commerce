@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { default: slugify } = require("slugify");
 
 const brandSchema = new mongoose.Schema(
   {
@@ -19,6 +20,10 @@ const brandSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+brandSchema.pre("save", () => {
+  this.slug = slugify(this.name, { lower: true });
+});
 
 const Brand = mongoose.model("Brand", brandSchema);
 
