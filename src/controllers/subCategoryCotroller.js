@@ -69,41 +69,12 @@ module.exports.getSubCategory = asyncHandler(async (req, res, next) => {
 // @desc:     Update Specific subCategory
 // @route:    PUT /api/v1/subCategories/:id
 // @access    Private
-module.exports.updateSubCategory = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-  const { name, category } = req.body;
-  const slug = slugify(name, { lower: true });
-
-  const subCategory = await SubCategory.findOneAndUpdate(
-    { _id: id },
-    { name, category, slug },
-    { new: true }
-  );
-
-  if (!subCategory) {
-    return next(new APIError(`No SubCategory with this ID: ${id}`, 404));
-  }
-
-  res.status(200).send({
-    data: subCategory,
-  });
-});
+module.exports.updateSubCategory = factory.updateOne(SubCategory);
 
 // @desc:     Delete Specific subCategory
 // @route:    DELTE /api/v1/subCategories/:id
 // @access    Private
 module.exports.deleteSubCategory = factory.deleteOne(SubCategory);
-// asyncHandler(async (req, res, next) => {
-//   const { id } = req.params;
-//   const subCategory = await SubCategory.findOneAndDelete({ _id: id });
-//   if (!subCategory) {
-//     return next(new APIError(`No SubCategory with this ID: ${id}`, 404));
-//   }
-
-//   res.status(204).send({
-//     data: subCategory,
-//   });
-// });
 
 // @desc:     Get subCategories for specific category
 // @route:    GET /api/v1/caregory/categoryId/subcategories  :: Nested Route

@@ -73,8 +73,9 @@ const productSchema = new mongoose.Schema(
   }
 );
 
-productSchema.pre("save", () => {
-  this.slug = slugify(this.title, { lower: true });
+productSchema.pre("save", function (next) {
+  this.slug = this.title.split(" ").join("-").toLowerCase();
+  next();
 });
 
 productSchema.pre(/^find/, function (next) {
@@ -92,6 +93,7 @@ productSchema.pre(/^find/, function (next) {
     });
   next();
 });
+
 const Product = mongoose.model("Product", productSchema);
 
 module.exports = Product;

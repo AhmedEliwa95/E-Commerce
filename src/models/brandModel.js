@@ -21,8 +21,9 @@ const brandSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-brandSchema.pre("save", () => {
-  this.slug = slugify(this.name, { lower: true });
+brandSchema.pre("save", function (next) {
+  this.slug = this.name.split(" ").join("-").toLowerCase();
+  next();
 });
 
 const Brand = mongoose.model("Brand", brandSchema);

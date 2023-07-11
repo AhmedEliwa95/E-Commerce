@@ -43,10 +43,10 @@ exports.getCategory = asyncHandler(async (req, res, next) => {
 exports.createCategory = asyncHandler(async (req, res) => {
   const { name } = req.body;
 
-  const newCategory = await Category.create({
-    name,
-    slug: slugify(name, { lower: true }),
-  });
+  const newCategory = await Category.create(req.body);
+  // req.body
+  // slug: slugify(name, { lower: true }),
+  // });
 
   res.status(201).json(newCategory);
 });
@@ -55,35 +55,8 @@ exports.createCategory = asyncHandler(async (req, res) => {
 // @route   PUT api/v1/categores/:id
 // @access  Private
 exports.updateCategory = factory.updateOne(Category);
-// asyncHandler(async (req, res, next) => {
-//   const { id } = req.params;
-//   const { name } = req.body;
-//   const updatedCategory = await Category.findOneAndUpdate(
-//     { _id: id },
-//     {
-//       name,
-//       slug: slugify(name, { lower: true }),
-//     },
-//     { new: true, runValidators: true }
-//   );
-
-//   if (!updatedCategory) {
-//     return next(new APIError(`no category with this ID: ${id}`, 404));
-//   }
-
-//   res.status(200).send({ data: updatedCategory });
-// });
 
 // @desc    Delete Category
 // @route   delete api/v1/categores/:id
 // @access  Private
 exports.deleteCategory = factory.deleteOne(Category);
-// asyncHandler(async (req, res, next) => {
-//   const { id } = req.params;
-//   const deletedCategory = await Category.findOneAndDelete({ _id: id });
-//   if (!deletedCategory) {
-//     return next(new APIError(`no category with this ID: ${id}`, 404));
-//   }
-
-//   res.status(204).send();
-// });

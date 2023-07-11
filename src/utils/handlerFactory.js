@@ -21,8 +21,8 @@ exports.updateOne = (Model) =>
       req.body,
       { new: true, runValidators: true }
     );
+    await updatedDocument.save();
 
-    updatedDocument.save();
     if (!updatedDocument) {
       return next(
         new APIError(`No Document with this ID: ${req.params.id}`, 404)

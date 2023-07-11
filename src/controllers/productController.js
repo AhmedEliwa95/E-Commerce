@@ -104,31 +104,9 @@ exports.createProduct = asyncHandler(async (req, res, next) => {
 // @desc:     Update Product
 // @route:    PUT /api/v1/products
 // @access    Private
-exports.updateProduct = asyncHandler(async (req, res, next) => {
-  if (req.body.title) {
-    req.body.slug = slugify(req.body.title, { lower: true });
-  }
-  const { id } = req.params;
-  const product = await Product.findOneAndUpdate({ _id: id }, req.body, {
-    new: true,
-  });
-
-  if (!product) {
-    next(new APIError(`no product with this ID: ${id}`, 404));
-  }
-  res.status(200).send({ data: product });
-});
+exports.updateProduct = factory.updateOne(Product);
 
 // @desc:     Delete Product
 // @route:    DELETE /api/v1/products
 // @access    Private
 exports.deleteProduct = factory.deleteOne(Product);
-// asyncHandler(async (req, res, next) => {
-//   const { id } = req.params;
-//   const product = await Product.findOneAndDelete({ _id: id });
-
-//   if (!product) {
-//     next(new APIError(`no product with this ID: ${id}`, 404));
-//   }
-//   res.status(204).send();
-// });

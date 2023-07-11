@@ -61,36 +61,9 @@ exports.createBrand = asyncHandler(async (req, res) => {
 // @desc    Update Brand
 // @route   PUT api/v1/brands/:id
 // @access  Private
-exports.updateBrand = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-  const { name } = req.body;
-  const updatedBrand = await Brand.findOneAndUpdate(
-    { _id: id },
-    {
-      name,
-      slug: slugify(name, { lower: true }),
-    },
-    { new: true, runValidators: true }
-  );
-
-  if (!updatedBrand) {
-    return next(new APIError(`no Brand with this ID: ${id}`, 404));
-  }
-
-  res.status(200).send({ data: updatedBrand });
-});
+exports.updateBrand = factory.updateOne(Brand);
 
 // @desc    Delete Brand
 // @route   delete api/v1/brands/:id
 // @access  Private
 exports.deleteBrand = factory.deleteOne(Brand);
-
-// asyncHandler(async (req, res, next) => {
-//   const { id } = req.params;
-//   const deletedBrand = await Brand.findOneAndDelete({ _id: id });
-//   if (!deletedBrand) {
-//     return next(new APIError(`no Brand with this ID: ${id}`, 404));
-//   }
-
-//   res.status(204).send();
-// });
