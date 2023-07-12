@@ -1,6 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const SubCategory = require("../models/subCategoryModel");
-// const APIError = require("../utils/apiError");
+const APIError = require("../utils/apiError");
 const factory = require("../utils/handlerFactory");
 
 // middleware before the validator to use the get the category from the categoryId
