@@ -1,26 +1,11 @@
 /* eslint-disable import/order */
 const Category = require("../models/categoryModel");
-const asyncHandler = require("express-async-handler");
 const factory = require("../utils/handlerFactory");
 
 // @desc:    Get List of Categories
 // @route:   GET /api/v1/categories
 // @access:  Public
-exports.getCategories = asyncHandler(async (req, res) => {
-  const page = req.query.page * 1 || 1;
-  // console.log(req.query);
-  const limit = req.query.limit * 1 || 5;
-  const skip = (page - 1) * limit;
-
-  const categories = await Category.find().skip(skip).limit(limit);
-  res.status(200).send({
-    data: {
-      results: categories.length,
-      page,
-      categories,
-    },
-  });
-});
+exports.getCategories = factory.getAll(Category, "");
 
 // @desc     Get Specific Category By ID
 // @route    GET api/v1/categories/:id

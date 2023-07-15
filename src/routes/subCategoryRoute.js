@@ -23,7 +23,7 @@ const subCategoryRouter = express.Router({ mergeParams: true });
 subCategoryRouter
   .route("/")
   .post(setCategoryIdToBody, createSubCategoryValidator, createSubCategory)
-  .get(createFilterObj, getSubCategories);
+  .get(getSubCategories);
 
 subCategoryRouter
   .route("/:id")

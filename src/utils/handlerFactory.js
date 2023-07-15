@@ -49,15 +49,18 @@ exports.getOne = (Model) =>
     res.status(200).send({ data: document });
   });
 
-exports.getAll = (Model) =>
+exports.getAll = (Model, modelName) =>
   asyncHandler(async (req, res, next) => {
+    let filter = {};
+    if (req.filterObj) filter = req.filterObj;
+
     const countDocs = await Model.countDocuments();
-    const apiFeatures = new APIFeatures(Model.find(), req.query)
+    const apiFeatures = new APIFeatures(Model.find(filter), req.query)
       .filter()
       .paginate(countDocs)
       .sort()
-      .fieldLimits();
-    // .search("Product");
+      .fieldLimits()
+      .search(modelName);
 
     const { mongooseQuery, paginationResult } = apiFeatures;
     const data = await mongooseQuery;

@@ -1,6 +1,4 @@
-const asyncHandler = require("express-async-handler");
 const SubCategory = require("../models/subCategoryModel");
-const APIError = require("../utils/apiError");
 const factory = require("../utils/handlerFactory");
 
 // middleware before the validator to use the get the category from the categoryId
@@ -14,34 +12,11 @@ exports.setCategoryIdToBody = (req, res, next) => {
 // @route:    POST /api/v1/categories/categoryId/subcategories : to Create subCategories for category by nestedRoute
 module.exports.createSubCategory = factory.createOne(SubCategory);
 
-exports.createFilterObj = (req, res, next) => {
-  let filterObject = {};
-  if (req.params.categoryId) filterObject = { category: req.params.categoryId };
-  req.filterObj = filterObject;
-  next();
-};
 // @desc:     Get All subCategories
 // @route:    get /api/v1/subCategories
 // @access:   Public
 // @route:    GET /api/v1/categories/categoryId/subcategories : to get subCategories for category
-module.exports.getSubCategories = asyncHandler(async (req, res) => {
-  const page = req.query.page * 1 || 1;
-  // console.log(req.query);
-  const limit = req.query.limit * 1 || 5;
-  const skip = (page - 1) * limit;
-
-  const subCategories = await SubCategory.find(req.filterObj)
-    .limit(limit)
-    .skip(skip);
-
-  res.status(200).json({
-    data: {
-      results: subCategories.length,
-      page,
-      subCategories,
-    },
-  });
-});
+module.exports.getSubCategories = factory.getAll(SubCategory, "");
 
 // @desc:     Get Specific subCategory
 // @route:    get /api/v1/subCategories/:id
