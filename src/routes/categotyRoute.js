@@ -7,6 +7,8 @@ const {
   getCategory,
   updateCategory,
   deleteCategory,
+  uploadCategoryImage,
+  resizeCategoryImage,
 } = require("../controllers/categoryController");
 
 const {
@@ -15,13 +17,19 @@ const {
   updateCategoryValidator,
   deleteCategoryValidator,
 } = require("../utils/validators/categoryValidator");
+
 const subCategoryRouter = require("./subCategoryRoute");
 
 categoryRouter.use("/:categoryId/subcategories", subCategoryRouter);
 
 categoryRouter
   .route("/")
-  .post(createCategoryValidator, createCategory)
+  .post(
+    resizeCategoryImage,
+    uploadCategoryImage,
+    createCategoryValidator,
+    createCategory
+  )
   .get(getCategories);
 
 categoryRouter
