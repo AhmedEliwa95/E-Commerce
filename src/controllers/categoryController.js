@@ -7,6 +7,7 @@ const multer = require("multer");
 // eslint-disable-next-line import/no-extraneous-dependencies
 const { v4: uuidv4 } = require("uuid");
 const sharp = require("sharp");
+const expressAsyncHandler = require("express-async-handler");
 
 // DiskStorage Engine
 // const multerStorage = multer.diskStorage({
@@ -37,14 +38,24 @@ const multerFilter = function (req, file, cb) {
 };
 const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
 
-// @desc:  upload Category image Using Multer
+// @desc:  upload Category image to memory Using Multer
 exports.uploadCategoryImage = upload.single("image");
 
 // @desc:  Resizing images uploading
-exports.resizeCategoryImage = (req, res, next) => {
-  console.log(req.file);
-  // sharp(req.fil)
-};
+exports.resizeCategoryImage = expressAsyncHandler(async (req, res, next) => {
+  // const mime = req.file.mimetype.split("/")[1];
+  const id = uuidv4();
+  const filename = `category-${id}-${Date.now()}.jpeg`;
+  // console.log(req.file);
+  await sharp(req.file.buffer)
+    .resize(600, 600)
+    .toFormat("jpeg")
+    .jpeg({ quality: 90 })
+    .toFile(`src/uploads/categories/${filename}`);
+
+  req.body.image = filename;
+  next();
+});
 
 // @desc:    Get List of Categories
 // @route:   GET /api/v1/categories

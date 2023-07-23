@@ -1,3 +1,5 @@
+const path = require("path");
+
 const express = require("express");
 // eslint-disable-next-line no-unused-vars
 const dotenv = require("dotenv").config({ path: "./config/config.env" });
@@ -21,7 +23,11 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
   console.log(`mode: ${process.env.NODE_ENV}`);
 }
+// to accept json content
 app.use(express.json());
+
+// to serve the static files from the server like images
+app.use(express.static(path.join(__dirname, "uploads")));
 
 //////// Mount Routes \\\\\\\\\\\
 app.use("/api/v1/categories", categoryRouter);

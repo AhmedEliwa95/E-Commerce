@@ -25,8 +25,8 @@ categoryRouter.use("/:categoryId/subcategories", subCategoryRouter);
 categoryRouter
   .route("/")
   .post(
-    resizeCategoryImage,
     uploadCategoryImage,
+    resizeCategoryImage,
     createCategoryValidator,
     createCategory
   )
@@ -35,7 +35,12 @@ categoryRouter
 categoryRouter
   .route("/:id")
   .get(getCategoryValidator, getCategory)
-  .put(updateCategoryValidator, updateCategory)
+  .put(
+    uploadCategoryImage,
+    resizeCategoryImage,
+    updateCategoryValidator,
+    updateCategory
+  )
   .delete(deleteCategoryValidator, deleteCategory);
 
 module.exports = categoryRouter;
