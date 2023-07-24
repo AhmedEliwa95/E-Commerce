@@ -7,6 +7,8 @@ const {
   getBrand,
   updateBrand,
   deleteBrand,
+  uploadBrandImage,
+  resizeBrandImage,
 } = require("../controllers/brandController");
 
 const {
@@ -19,12 +21,15 @@ const {
 // const subBrandRouter = require("./subCategoryRoute");
 // categoryRouter.use("/:categoryId/subcategories", subCategoryRouter);
 
-brandRouter.route("/").post(createBrandValidator, createBrand).get(getBrands);
+brandRouter
+  .route("/")
+  .post(uploadBrandImage, resizeBrandImage, createBrandValidator, createBrand)
+  .get(getBrands);
 
 brandRouter
   .route("/:id")
   .get(getBrandValidator, getBrand)
-  .put(updateBrandValidator, updateBrand)
+  .put(uploadBrandImage, resizeBrandImage, updateBrandValidator, updateBrand)
   .delete(deleteBrandValidator, deleteBrand);
 
 module.exports = brandRouter;
