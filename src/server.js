@@ -12,6 +12,7 @@ const categoryRouter = require("./routes/categotyRoute");
 const subCategoryRouter = require("./routes/subCategoryRoute");
 const brandRouter = require("./routes/brandRoute");
 const productRouter = require("./routes/productRoute");
+const userRouter = require("./routes/userRoute");
 
 dbConnection();
 
@@ -34,6 +35,7 @@ app.use("/api/v1/categories", categoryRouter);
 app.use("/api/v1/subcategories", subCategoryRouter);
 app.use("/api/v1/brands", brandRouter);
 app.use("/api/v1/products", productRouter);
+app.use("/api/v1/users", userRouter);
 
 /// to handle Forigin Routes
 app.all("*", (req, res, next) => {

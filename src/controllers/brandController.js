@@ -13,7 +13,7 @@ exports.uploadBrandImage = uploadSingleImage("image");
 exports.resizeBrandImage = expressAsyncHandler(async (req, res, next) => {
   // const mime = req.file.mimetype.split("/")[1];
   const id = uuidv4();
-  const filename = `category-${id}-${Date.now()}.jpeg`;
+  const filename = `brand-${id}-${Date.now()}.jpeg`;
   // console.log(req.file);
   await sharp(req.file.buffer)
     .resize(600, 600)
