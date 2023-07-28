@@ -23,6 +23,9 @@ exports.resizeCategoryImage = expressAsyncHandler(async (req, res, next) => {
     .jpeg({ quality: 90 })
     .toFile(`src/uploads/categories/${filename}`);
 
+  // To save the url in the database but it's not effective
+  // req.body.image =`${req.hostname}${filename}`;
+
   req.body.image = filename;
   next();
 });

@@ -20,8 +20,24 @@ const brandSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+const setImageURL = (doc) => {
+  if (doc.image) {
+    // this imageURL will appear in the response only and will not be saved in the database
+    const imageURL = `${process.env.BASE_URL}/brands/${doc.image}`;
+    doc.image = imageURL;
+  }
+};
+brandSchema.post("init", (doc) => {
+  setImageURL(doc);
+});
+brandSchema.post("save", (doc) => {
+  setImageURL(doc);
+});
+
 brandSchema.pre("save", function (next) {
-  this.slug = this.name.split(" ").join("-").toLowerCase();
+  if (this.name) {
+    this.slug = this.name.split(" ").join("-").toLowerCase();
+  }
   next();
 });
 

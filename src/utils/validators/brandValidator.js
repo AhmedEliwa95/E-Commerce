@@ -17,6 +17,7 @@ exports.createBrandValidator = [
 
 exports.updateBrandValidator = [
   check("id").isMongoId().withMessage("Invalid Brand ID"),
+  check("name").optional(),
   validatorMiddleware, // instead of calling it inside the route to make the route cleaner
 ];
 

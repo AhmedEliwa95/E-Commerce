@@ -83,6 +83,27 @@ productSchema.pre("save", function (next) {
   next();
 });
 
+// return the url in the queries
+const setImageURL = (doc) => {
+  if (doc.imageCover) {
+    doc.imageCover = `${process.env.BASE_URL}/products/${doc.imageCover}`;
+  }
+  if (doc.images.length > 0) {
+    // eslint-disable-next-line array-callback-return
+    doc.images.map((img, index) => {
+      doc.images[index + 1] = `${process.env.BASE_URL}/products/${img}`;
+    });
+  }
+};
+
+productSchema.post("init", (doc) => {
+  setImageURL(doc);
+});
+productSchema.post("save", (doc) => {
+  setImageURL(doc);
+});
+
+// Populating parent model
 productSchema.pre(/^find/, function (next) {
   this.populate({
     path: "category",

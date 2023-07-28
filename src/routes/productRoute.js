@@ -13,17 +13,29 @@ const {
   getProduct,
   updateProduct,
   deleteProduct,
+  uploadProductImages,
+  resizeProductImges,
 } = require("../controllers/productController");
 
 productRouter
   .route("/")
-  .post(createProductValidator, createProduct)
+  .post(
+    uploadProductImages,
+    resizeProductImges,
+    createProductValidator,
+    createProduct
+  )
   .get(getProducts);
 
 productRouter
   .route("/:id")
   .get(getProductValidator, getProduct)
-  .put(updateProductValidator, updateProduct)
+  .put(
+    uploadProductImages,
+    resizeProductImges,
+    updateProductValidator,
+    updateProduct
+  )
   .delete(deleteProductValidator, deleteProduct);
 
 module.exports = productRouter;

@@ -22,5 +22,6 @@ exports.updateCategoryValidator = [
 
 exports.deleteCategoryValidator = [
   check("id").isMongoId().withMessage("Invalid Category ID"),
+  check("name").optional(),
   validatorMiddleware, // instead of calling it inside the route to make the route cleaner
 ];

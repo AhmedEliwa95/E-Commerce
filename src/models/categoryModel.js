@@ -21,6 +21,21 @@ const categorySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+//@ mongoose document middleware to set image URL + image name
+// we used post not pre to save the image by the name and return it in the response as a URL
+const setImageURL = (doc) => {
+  if (doc.image) {
+    // this imageURL will appear in the response only and will not be saved in the database
+    const imageURL = `${process.env.BASE_URL}/categories/${doc.image}`;
+    doc.image = imageURL;
+  }
+};
+categorySchema.post("init", (doc) => {
+  setImageURL(doc);
+});
+categorySchema.post("save", (doc) => {
+  setImageURL(doc);
+});
 categorySchema.pre("save", function (next) {
   this.slug = slugify(this.name, { lower: true });
   next();
