@@ -5,6 +5,7 @@ const factory = require("../utils/handlerFactory");
 const { v4: uuidv4 } = require("uuid");
 const expressAsyncHandler = require("express-async-handler");
 const { uploadSingleImage } = require("../middlewares/uploadIamgeMiddleware");
+const APIError = require("../utils/apiError");
 
 // @desc:  upload Category image to memory Using Multer
 exports.uploadUserImage = uploadSingleImage("profileImg");
@@ -48,4 +49,14 @@ exports.updateUser = factory.updateOne(User);
 // @desc    Delete User
 // @route   delete api/v1/users/:id
 // @access  Private
-exports.deleteUser = factory.deleteOne(User);
+exports.deleteUser = expressAsyncHandler(async (req, res, next) => {
+  const user = await User.findOneAndUpdate(
+    { _id: req.params.id },
+    { active: false },
+    { new: true, runValidators: true }
+  );
+  if (!user) {
+    return next(new APIError(`no user with this ID: ${req.params.id}`, 404));
+  }
+  res.status(204).send(user);
+});
