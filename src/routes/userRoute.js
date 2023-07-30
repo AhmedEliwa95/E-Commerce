@@ -9,6 +9,7 @@ const {
   deleteUser,
   uploadUserImage,
   resizeUserImage,
+  changeUserPassword,
 } = require("../controllers/userController");
 
 const {
@@ -31,5 +32,7 @@ userRouter
   .get(getUserValidator, getUser)
   .put(uploadUserImage, resizeUserImage, updateUserValidator, updateUser)
   .delete(deleteUserValidator, deleteUser);
+
+userRouter.put("/changePassword", changeUserPassword);
 
 module.exports = userRouter;

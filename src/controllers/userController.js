@@ -6,6 +6,7 @@ const { v4: uuidv4 } = require("uuid");
 const expressAsyncHandler = require("express-async-handler");
 const { uploadSingleImage } = require("../middlewares/uploadIamgeMiddleware");
 const APIError = require("../utils/apiError");
+const bcrypt = require("bcryptjs");
 
 // @desc:  upload Category image to memory Using Multer
 exports.uploadUserImage = uploadSingleImage("profileImg");
@@ -44,8 +45,38 @@ exports.createUser = factory.createOne(User);
 // @desc    Update User
 // @route   PUT api/v1/users/:id
 // @access  Private: admin
-exports.updateUser = factory.updateOne(User);
+exports.updateUser = expressAsyncHandler(async (req, res, next) => {
+  if (req.body.password) {
+    delete req.body.password;
+  }
+  const updatedDocument = await User.findOneAndUpdate(
+    { _id: req.params.id },
+    req.body,
+    { new: true, runValidators: true }
+  );
+  await updatedDocument.save();
 
+  if (!updatedDocument) {
+    return next(
+      new APIError(`No Document with this ID: ${req.params.id}`, 404)
+    );
+  }
+
+  res.status(200).send({ data: updatedDocument });
+});
+
+exports.changeUserPassword = expressAsyncHandler(async (req, res, next) => {
+  const user = await User.findByIdAndUpdate(
+    { _id: req.params.id },
+    { password: await bcrypt.hash(req.body.password, 8) },
+    { new: true }
+  );
+  if (!user) {
+    return next(new APIError(`no user with this ID:${req.params.id}`, 404));
+  }
+
+  res.status(200).json(user);
+});
 // @desc    Delete User
 // @route   delete api/v1/users/:id
 // @access  Private
