@@ -17,6 +17,7 @@ const {
   createUserValidator,
   updateUserValidator,
   deleteUserValidator,
+  changeUserPasswordValidator,
 } = require("../utils/validators/userValidator");
 
 // const subBrandRouter = require("./subCategoryRoute");
@@ -33,6 +34,10 @@ userRouter
   .put(uploadUserImage, resizeUserImage, updateUserValidator, updateUser)
   .delete(deleteUserValidator, deleteUser);
 
-userRouter.put("/changePassword", changeUserPassword);
+userRouter.put(
+  "/changePassword/:id",
+  changeUserPasswordValidator,
+  changeUserPassword
+);
 
 module.exports = userRouter;

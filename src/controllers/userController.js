@@ -47,7 +47,13 @@ exports.createUser = factory.createOne(User);
 // @access  Private: admin
 exports.updateUser = expressAsyncHandler(async (req, res, next) => {
   if (req.body.password) {
-    delete req.body.password;
+    return next(
+      new APIError(
+        `use this route to change your password: ${process.env.BASE_URL}/api/v1/users/changePassword/${req.params.id}`,
+        404
+      )
+    );
+    // delete req.body.password;
   }
   const updatedDocument = await User.findOneAndUpdate(
     { _id: req.params.id },
