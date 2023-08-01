@@ -1,4 +1,5 @@
 const bcrypt = require("bcryptjs");
+const { default: slugify } = require("slugify");
 
 const mongoose = require("mongoose");
 
@@ -40,10 +41,18 @@ const userSchema = mongoose.Schema({
   },
 });
 
+// @desc: Hashing the Password & slugify the Name
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   this.password = await bcrypt.hash(this.password, 8);
+  this.slug = slugify(this.name);
   next();
 });
+
+// userSchema.post("save", function (next) {
+//   delete this.password;
+//   next();
+// });
+
 const User = mongoose.model("User", userSchema);
 module.exports = User;
