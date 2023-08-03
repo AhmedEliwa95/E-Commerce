@@ -74,7 +74,10 @@ exports.updateUser = expressAsyncHandler(async (req, res, next) => {
 exports.changeUserPassword = expressAsyncHandler(async (req, res, next) => {
   const user = await User.findByIdAndUpdate(
     { _id: req.params.id },
-    { password: await bcrypt.hash(req.body.password, 8) },
+    {
+      password: await bcrypt.hash(req.body.password, 8),
+      passwordChangedAt: Date.now(),
+    },
     { new: true }
   );
   if (!user) {

@@ -19,8 +19,6 @@ const {
   deleteUserValidator,
   changeUserPasswordValidator,
 } = require("../utils/validators/userValidator");
-const { signup } = require("../controllers/authController");
-const { signupValidator } = require("../utils/validators/authValidator");
 
 // const subBrandRouter = require("./subCategoryRoute");
 // categoryRouter.use("/:categoryId/subcategories", subCategoryRouter);
@@ -37,7 +35,7 @@ userRouter
   .delete(deleteUserValidator, deleteUser);
 
 userRouter.put(
-  "/changePassword/:id",
+  "/changepassword/:id",
   changeUserPasswordValidator,
   changeUserPassword
 );

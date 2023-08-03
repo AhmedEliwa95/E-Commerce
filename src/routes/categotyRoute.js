@@ -19,12 +19,14 @@ const {
 } = require("../utils/validators/categoryValidator");
 
 const subCategoryRouter = require("./subCategoryRoute");
+const { protect } = require("../controllers/authController");
 
 categoryRouter.use("/:categoryId/subcategories", subCategoryRouter);
 
 categoryRouter
   .route("/")
   .post(
+    protect,
     uploadCategoryImage,
     resizeCategoryImage,
     createCategoryValidator,
