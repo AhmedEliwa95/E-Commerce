@@ -56,6 +56,7 @@ exports.resizeProductImges = expressAsyncHandler(async (req, res, next) => {
 // @route:   GET /api/v1/products
 // @access:  Public
 exports.getProducts = factory.getAll(Product, "Product");
+
 // @desc     Get Specific Product By ID
 // @route    GET api/v1/products/:id
 // @access   public
@@ -63,16 +64,15 @@ exports.getProduct = factory.getOne(Product);
 
 // @desc:     Create Product
 // @route:    POST /api/v1/products
-// @access    Private
-
+// @access    Private: Admin & Manager
 exports.createProduct = factory.createOne(Product);
 
 // @desc:     Update Product
 // @route:    PUT /api/v1/products
-// @access    Private
+// @access    Private: Admin & Manager
 exports.updateProduct = factory.updateOne(Product);
 
 // @desc:     Delete Product
 // @route:    DELETE /api/v1/products
-// @access    Private
+// @access    Private: Admin
 exports.deleteProduct = factory.deleteOne(Product);

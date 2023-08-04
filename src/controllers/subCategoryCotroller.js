@@ -8,8 +8,8 @@ exports.setCategoryIdToBody = (req, res, next) => {
 };
 // @desc:     Create subCategory
 // @route:    POST /api/v1/subCategories
-// @access    Private
 // @route:    POST /api/v1/categories/categoryId/subcategories : to Create subCategories for category by nestedRoute
+// @access    Private: Admin & Manager
 module.exports.createSubCategory = factory.createOne(SubCategory);
 
 // @desc:     Get All subCategories
@@ -25,12 +25,12 @@ module.exports.getSubCategory = factory.getOne(SubCategory);
 
 // @desc:     Update Specific subCategory
 // @route:    PUT /api/v1/subCategories/:id
-// @access    Private
+// @access    Private: Admin & Manager
 module.exports.updateSubCategory = factory.updateOne(SubCategory);
 
 // @desc:     Delete Specific subCategory
 // @route:    DELTE /api/v1/subCategories/:id
-// @access    Private
+// @access    Private: Admin
 module.exports.deleteSubCategory = factory.deleteOne(SubCategory);
 
 // @desc:     Get subCategories for specific category

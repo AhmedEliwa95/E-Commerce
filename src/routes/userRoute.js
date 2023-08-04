@@ -19,10 +19,12 @@ const {
   deleteUserValidator,
   changeUserPasswordValidator,
 } = require("../utils/validators/userValidator");
+const { protect, restrictTo } = require("../controllers/authController");
 
 // const subBrandRouter = require("./subCategoryRoute");
 // categoryRouter.use("/:categoryId/subcategories", subCategoryRouter);
 
+userRouter.use(protect, restrictTo("admin"));
 userRouter
   .route("/")
   .post(uploadUserImage, resizeUserImage, createUserValidator, createUser)

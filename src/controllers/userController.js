@@ -71,6 +71,9 @@ exports.updateUser = expressAsyncHandler(async (req, res, next) => {
   res.status(200).send({ data: updatedDocument });
 });
 
+// @desc    Update User Password
+// @route   PUT api/v1/users/:id
+// @access  Private: protected user
 exports.changeUserPassword = expressAsyncHandler(async (req, res, next) => {
   const user = await User.findByIdAndUpdate(
     { _id: req.params.id },
@@ -86,9 +89,10 @@ exports.changeUserPassword = expressAsyncHandler(async (req, res, next) => {
 
   res.status(200).json(user);
 });
+
 // @desc    Delete User
 // @route   delete api/v1/users/:id
-// @access  Private
+// @access  Private/Admin
 exports.deleteUser = expressAsyncHandler(async (req, res, next) => {
   const user = await User.findOneAndUpdate(
     { _id: req.params.id },

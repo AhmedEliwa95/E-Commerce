@@ -16,10 +16,13 @@ const {
   uploadProductImages,
   resizeProductImges,
 } = require("../controllers/productController");
+const { protect, restrictTo } = require("../controllers/authController");
 
 productRouter
   .route("/")
   .post(
+    protect,
+    restrictTo("admin", "manager"),
     uploadProductImages,
     resizeProductImges,
     createProductValidator,
@@ -31,11 +34,13 @@ productRouter
   .route("/:id")
   .get(getProductValidator, getProduct)
   .put(
+    protect,
+    restrictTo("admin", "manager"),
     uploadProductImages,
     resizeProductImges,
     updateProductValidator,
     updateProduct
   )
-  .delete(deleteProductValidator, deleteProduct);
+  .delete(protect, restrictTo("admin"), deleteProductValidator, deleteProduct);
 
 module.exports = productRouter;

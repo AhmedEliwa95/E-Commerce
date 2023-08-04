@@ -16,20 +16,37 @@ const {
   updateSubCategoryValidator,
   deleteSubCategoryValidator,
 } = require("../utils/validators/subCategoryValidator");
+const { protect, restrictTo } = require("../controllers/authController");
 
 // mergeParams: to access params in other routes : to access subcategories according to categoryId
 const subCategoryRouter = express.Router({ mergeParams: true });
 
 subCategoryRouter
   .route("/")
-  .post(setCategoryIdToBody, createSubCategoryValidator, createSubCategory)
+  .post(
+    protect,
+    restrictTo("admin", "manager"),
+    setCategoryIdToBody,
+    createSubCategoryValidator,
+    createSubCategory
+  )
   .get(getSubCategories);
 
 subCategoryRouter
   .route("/:id")
   .get(getSubCategoryValidator, getSubCategory)
-  .put(updateSubCategoryValidator, updateSubCategory)
-  .delete(deleteSubCategoryValidator, deleteSubCategory);
+  .put(
+    protect,
+    restrictTo("admin", "manager"),
+    updateSubCategoryValidator,
+    updateSubCategory
+  )
+  .delete(
+    protect,
+    restrictTo("admin"),
+    deleteSubCategoryValidator,
+    deleteSubCategory
+  );
 
 // subCategoryRouter.route("/:categoryId/subcategories").get(getSubCategoriesForCategory);
 

@@ -17,19 +17,39 @@ const {
   updateBrandValidator,
   deleteBrandValidator,
 } = require("../utils/validators/brandValidator");
+const { protect, restrictTo } = require("../controllers/authController");
 
 // const subBrandRouter = require("./subCategoryRoute");
 // categoryRouter.use("/:categoryId/subcategories", subCategoryRouter);
 
 brandRouter
   .route("/")
-  .post(uploadBrandImage, resizeBrandImage, createBrandValidator, createBrand)
+  .post(
+    protect,
+    restrictTo("admin", "manager"),
+    uploadBrandImage,
+    resizeBrandImage,
+    createBrandValidator,
+    createBrand
+  )
   .get(getBrands);
 
 brandRouter
   .route("/:id")
   .get(getBrandValidator, getBrand)
-  .put(uploadBrandImage, resizeBrandImage, updateBrandValidator, updateBrand)
-  .delete(deleteBrandValidator, deleteBrand);
+  .put(
+    protect,
+    restrictTo("admin", "manager"),
+    uploadBrandImage,
+    resizeBrandImage,
+    updateBrandValidator,
+    updateBrand
+  )
+  .delete(
+    protect,
+    restrictTo("admin", "manager"),
+    deleteBrandValidator,
+    deleteBrand
+  );
 
 module.exports = brandRouter;

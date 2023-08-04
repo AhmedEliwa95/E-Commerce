@@ -108,3 +108,12 @@ exports.protect = expressAsyncHandler(async (req, res, next) => {
   req.user = user;
   next();
 });
+
+exports.restrictTo = (...roles) =>
+  expressAsyncHandler(async (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      console.log(req.user.role);
+      return next(new APIError("Forbiden, not allowed to this route", 403));
+    }
+    next();
+  });
