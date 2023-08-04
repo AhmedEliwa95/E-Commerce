@@ -31,6 +31,9 @@ const userSchema = mongoose.Schema({
     minlength: [8, "User password must be greater than 8 chars"],
   },
   passwordChangedAt: Date,
+  passwordResetCode: String,
+  passwordResetExpired: Date,
+  passwordResetVerified: Boolean,
   role: {
     type: String,
     enum: ["user", "admin", "manager"],

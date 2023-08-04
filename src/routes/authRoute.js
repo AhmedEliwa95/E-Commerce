@@ -2,7 +2,11 @@ const express = require("express");
 
 const authRouter = express.Router();
 
-const { signup, login } = require("../controllers/authController");
+const {
+  signup,
+  login,
+  forgotPassword,
+} = require("../controllers/authController");
 const {
   signupValidator,
   loginValidator,
@@ -13,5 +17,6 @@ const {
 
 authRouter.post("/signup", signupValidator, signup);
 authRouter.post("/login", loginValidator, login);
+authRouter.post("/forgotPassword", forgotPassword);
 
 module.exports = authRouter;
