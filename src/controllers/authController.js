@@ -29,7 +29,7 @@ const createAndSendToken = (user, statusCode, res) => {
 
   user.password = undefined;
 
-  res.cookie("jwt", token, cookieOptions);
+  // res.cookie("jwt", token, cookieOptions);
 
   res.status(statusCode).json({ data: user, token });
 };
@@ -140,8 +140,8 @@ exports.forgotPassword = expressAsyncHandler(async (req, res, next) => {
     .createHash("sha256")
     .update(resetCode)
     .digest("hex");
-  console.log({ resetCode });
-  console.log({ hashedResetCode });
+  // console.log({ resetCode });
+  // console.log({ hashedResetCode });
   // 4) save this hashedResetcode to the database
   user.passwordResetCode = hashedResetCode;
   // 5) make password resetCode only available for ten minutes
@@ -156,11 +156,11 @@ exports.forgotPassword = expressAsyncHandler(async (req, res, next) => {
     await sendEmail({
       email: user.email,
       subject: `your password reset code is valid for Ten Mins`,
-      message: `Hi ${user.name} /n
-    We recieved a request to reset the password on your E-Shop Account /n
-     ${resetCode} /n
-     Enter this code to complete the reset. /n 
-     Thanks for helping us keep your account secure./n
+      message: `Hi ${user.name} 
+    We recieved a request to reset the password on your E-Shop Account 
+     ${resetCode} 
+     Enter this code to complete the reset.  
+     Thanks for helping us keep your account secure.
      The E-Shop Team`,
     });
   } catch (err) {
@@ -170,7 +170,61 @@ exports.forgotPassword = expressAsyncHandler(async (req, res, next) => {
     await user.save();
     return next(new APIError("There is an error in sending the emails", 500));
   }
-  res
-    .status(200)
-    .json({ staus: "Success", message: "Reset code sent to email" });
+  res.status(200).json({
+    staus: "Success",
+    message: `Reset code sent to email:${user.email}`,
+  });
+});
+
+// @desc:   verifyPassword: Check if the hashedResetPassword stored in the DB is the same
+// @Route:  POST api/v1/auth/verifyPassword
+// @access: Public
+
+exports.verifyResetPassword = expressAsyncHandler(async (req, res, next) => {
+  // 1) get the user by the resetCode
+  const hashedResetCode = crypto
+    .createHash("sha256")
+    .update(req.body.resetCode)
+    .digest("hex");
+
+  const user = await User.findOne({
+    passwordResetCode: hashedResetCode,
+    passwordResetExpired: { $gt: Date.now() }, // to check it it expired
+  });
+  if (!user) return next(new APIError("invalid or expired reset code", 404));
+  console.log(user);
+
+  // 3) verify
+  user.passwordResetVerified = true;
+  user.save();
+
+  res.status(200).json({ status: "Success" });
+});
+
+// @desc:   Reset Password
+// @Route:  PUT api/v1/auth/resetPassword
+// @access: Public
+
+exports.resetPassword = expressAsyncHandler(async (req, res, next) => {
+  // 1) Get the user by the email from the body of the request
+  const user = await User.findOne({ email: req.body.email });
+
+  if (!user)
+    return next(new APIError(`${req.body.email} is an invalid email`, 404));
+
+  // 2) check is the password verified or not
+  if (!user.passwordResetVerified)
+    return next(new APIError("Reset code not verified", 400));
+
+  // 3) PUT the password to the new password from the body of the request
+  user.password = req.body.newPassword;
+
+  // 4) set all password reset code paramaters to undefined and save the user
+  user.passwordResetCode = undefined;
+  user.passwordResetExpired = undefined;
+  user.passwordResetVerified = undefined;
+  await user.save();
+
+  // send token
+  createAndSendToken(user, 200, res);
 });

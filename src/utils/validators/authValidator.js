@@ -67,3 +67,20 @@ exports.loginValidator = [
   //   }),
   validatorMiddleware,
 ];
+
+exports.resetPasswordValidator = [
+  check("email")
+    .notEmpty()
+    .withMessage("email is required for the user")
+    .isEmail()
+    .withMessage("not a valid email")
+    .isLowercase()
+    .withMessage("email should be lowercase chars only"),
+  check("newPassword")
+    .notEmpty()
+    .withMessage("user password is required")
+    .isStrongPassword()
+    .withMessage("week password"),
+
+  validatorMiddleware,
+];
