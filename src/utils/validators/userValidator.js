@@ -116,3 +116,30 @@ exports.changeUserPasswordValidator = [
 
   validatorMiddleware,
 ];
+
+exports.updateMeValidator = [
+  check("phone")
+    .optional()
+    .isMobilePhone(["ar-EG", "ar-SA"])
+    .withMessage("only Egyptian and Saudi numbers are valid"),
+  check("name")
+    .optional()
+    .isLength({ min: 3 })
+    .withMessage("name length alowed from 3 chars")
+    .custom((val, { req }) => {
+      req.body.slug = slugify(val);
+      return true;
+    }),
+  check("email")
+    .optional()
+    .isEmail()
+    .withMessage("not a valid email")
+    .isLowercase()
+    .withMessage("email should be lowercase chars only")
+    .custom(async (val) => {
+      // unhandled rejection error
+      const user = await User.findOne({ email: val });
+      if (user) throw new Error(`E-mail already in use`);
+    }),
+  validatorMiddleware, // instead of calling it inside the route to make the route cleaner
+];

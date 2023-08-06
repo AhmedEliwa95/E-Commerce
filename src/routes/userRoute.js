@@ -10,6 +10,9 @@ const {
   uploadUserImage,
   resizeUserImage,
   changeUserPassword,
+  getMyProfile,
+  updateMyPassword,
+  updateMyProfile,
 } = require("../controllers/userController");
 
 const {
@@ -18,13 +21,28 @@ const {
   updateUserValidator,
   deleteUserValidator,
   changeUserPasswordValidator,
+  updateMeValidator,
 } = require("../utils/validators/userValidator");
 const { protect, restrictTo } = require("../controllers/authController");
 
 // const subBrandRouter = require("./subCategoryRoute");
 // categoryRouter.use("/:categoryId/subcategories", subCategoryRouter);
 
-userRouter.use(protect, restrictTo("admin"));
+/// Logged Users Routes
+userRouter.use(protect);
+userRouter.get("/getme", getMyProfile, getUser);
+userRouter.put("/changeMyPassword", updateMyPassword);
+userRouter.put("/uptademe", updateMeValidator, updateMyProfile);
+
+/// Admin Routes
+userRouter.use(restrictTo("admin", "manager"));
+
+userRouter.put(
+  "/changepassword/:id",
+  changeUserPasswordValidator,
+  changeUserPassword
+);
+
 userRouter
   .route("/")
   .post(uploadUserImage, resizeUserImage, createUserValidator, createUser)
@@ -35,11 +53,5 @@ userRouter
   .get(getUserValidator, getUser)
   .put(uploadUserImage, resizeUserImage, updateUserValidator, updateUser)
   .delete(deleteUserValidator, deleteUser);
-
-userRouter.put(
-  "/changepassword/:id",
-  changeUserPasswordValidator,
-  changeUserPassword
-);
 
 module.exports = userRouter;

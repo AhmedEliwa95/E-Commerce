@@ -7,32 +7,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
 const APIError = require("../utils/apiError");
 const sendEmail = require("../utils/sendEmail");
-
-// @Desc to create a token
-const signToken = (userId) =>
-  jwt.sign({ userId }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRE_TIME,
-  });
-
-//@Desc create and send a token
-const createAndSendToken = (user, statusCode, res) => {
-  const token = signToken(user._id);
-  const cookieOptions = {
-    maxAge: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
-    ),
-    // to make the cookie can't be access or modified in anyway on the browser
-    httpOnly: true,
-  };
-  // to make it works with https only
-  if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
-
-  user.password = undefined;
-
-  // res.cookie("jwt", token, cookieOptions);
-
-  res.status(statusCode).json({ data: user, token });
-};
+const { createAndSendToken } = require("../utils/createToken");
 
 // @desc:    signup
 // @route:   POST /api/v1/auth/signup
@@ -116,7 +91,7 @@ exports.protect = expressAsyncHandler(async (req, res, next) => {
 exports.restrictTo = (...roles) =>
   expressAsyncHandler(async (req, res, next) => {
     if (!roles.includes(req.user.role)) {
-      console.log(req.user.role);
+      // console.log(req.user.role);
       return next(new APIError("Forbiden, not allowed to this route", 403));
     }
     next();
@@ -204,7 +179,6 @@ exports.verifyResetPassword = expressAsyncHandler(async (req, res, next) => {
 // @desc:   Reset Password
 // @Route:  PUT api/v1/auth/resetPassword
 // @access: Public
-
 exports.resetPassword = expressAsyncHandler(async (req, res, next) => {
   // 1) Get the user by the email from the body of the request
   const user = await User.findOne({ email: req.body.email });
