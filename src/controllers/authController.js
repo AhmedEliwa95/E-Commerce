@@ -83,6 +83,7 @@ exports.protect = expressAsyncHandler(async (req, res, next) => {
   }
 
   //5) send the user as a property in the request
+  // if (!user.active) user = { active: false };
   req.user = user;
   next();
 });

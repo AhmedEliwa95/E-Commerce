@@ -167,3 +167,23 @@ exports.updateMyProfile = expressAsyncHandler(async (req, res, next) => {
 
   res.status(200).send({ data: updatedDocument });
 });
+
+// @desc     Deactivate or delete My Profile
+// @route    PUT api/v1/users/deleteME
+// @access   Private: protect
+exports.deleteMe = expressAsyncHandler(async (req, res, next) => {
+  await User.findByIdAndUpdate({ _id: req.user._id }, { active: false });
+  res.status(204).json({ status: "Success" });
+});
+
+// @desc     Reactive My Profile
+// @route    PUT api/v1/users/activateME
+// @access   Private: protect
+exports.activeMe = expressAsyncHandler(async (req, res, next) => {
+  const user = await User.findByIdAndUpdate(
+    { _id: req.user._id },
+    { active: true },
+    { new: true }
+  );
+  res.status(200).json({ status: "Success", data: user });
+});

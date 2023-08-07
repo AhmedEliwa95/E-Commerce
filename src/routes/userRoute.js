@@ -13,6 +13,8 @@ const {
   getMyProfile,
   updateMyPassword,
   updateMyProfile,
+  deleteMe,
+  activeMe,
 } = require("../controllers/userController");
 
 const {
@@ -33,6 +35,8 @@ userRouter.use(protect);
 userRouter.get("/getme", getMyProfile, getUser);
 userRouter.put("/changeMyPassword", updateMyPassword);
 userRouter.put("/uptademe", updateMeValidator, updateMyProfile);
+userRouter.delete("/deleteme", deleteMe);
+userRouter.put("/activeme", activeMe);
 
 /// Admin Routes
 userRouter.use(restrictTo("admin", "manager"));
