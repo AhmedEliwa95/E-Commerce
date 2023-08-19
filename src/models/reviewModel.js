@@ -26,4 +26,14 @@ const reviewSchema = new monogoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Review", reviewSchema);
+reviewSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "user",
+    select: "name",
+  });
+  next();
+});
+
+const Review = mongoose.model("Review", reviewSchema);
+
+module.exports = Review;
