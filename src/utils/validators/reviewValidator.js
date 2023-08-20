@@ -20,6 +20,7 @@ exports.createReviewValidator = [
     .isMongoId()
     .withMessage("Invalid User ID")
     .custom(async (val, { req }) => {
+      // if (req.body.user === req.user._id) throw new Error("not a valid user");
       //Check if the loged user ceate review before to make the user create only one review
       const review = await Review.findOne({
         user: req.user._id,
@@ -38,7 +39,8 @@ exports.updateReviewValidator = [
       // Check review ownership before update
       const review = await Review.findById(val);
       if (!review) throw new Error("Invalid Review ID");
-      if (review.user.toString() !== req.user._id.toString()) {
+      // console.log(review.user);
+      if (review.user._id.toString() !== req.user._id.toString()) {
         throw new Error("not allowed to do this action");
       }
     }),

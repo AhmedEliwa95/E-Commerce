@@ -60,7 +60,7 @@ exports.getProducts = factory.getAll(Product, "Product");
 // @desc     Get Specific Product By ID
 // @route    GET api/v1/products/:id
 // @access   public
-exports.getProduct = factory.getOne(Product);
+exports.getProduct = factory.getOne(Product, "reviews");
 
 // @desc:     Create Product
 // @route:    POST /api/v1/products

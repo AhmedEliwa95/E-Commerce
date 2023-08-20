@@ -70,14 +70,18 @@ const productSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   }
 );
 
-// productSchema.pre("save", function (next) {
-//   this.slug = slugify(this.title, { lower: true });
-//   // this.slug = this.title.split(" ").join("-").toLowerCase();
-//   next();
-// });
+// to create a vertual field without saving this field in the database
+productSchema.virtual("reviews", {
+  ref: "Review",
+  localField: "_id",
+  foreignField: "product",
+});
+
 productSchema.pre("save", function (next) {
   this.slug = slugify(this.title, { lower: true });
   next();
@@ -117,8 +121,14 @@ productSchema.pre(/^find/, function (next) {
       path: "brand",
       select: "name -_id",
     });
+
   next();
 });
+
+// productSchema.pre(/^findById/, async function (next) {
+//   await this.populate({ path: "reviews" });
+//   next();
+// });
 
 const Product = mongoose.model("Product", productSchema);
 

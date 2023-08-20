@@ -40,13 +40,18 @@ exports.createOne = (Model) =>
     res.status(201).send({ data: document });
   });
 
-exports.getOne = (Model) =>
+exports.getOne = (Model, populateOptions) =>
   asyncHandler(async (req, res, next) => {
-    const document = await Model.findById(req.params.id);
-    if (!document) {
+    let query = await Model.findById(req.params.id);
+
+    if (populateOptions) {
+      query = await query.populate({ path: populateOptions });
+    }
+    if (!query) {
       return next(new APIError(`No document with this ID: ${req.params.id}`));
     }
-    res.status(200).send({ data: document });
+
+    res.status(200).send({ data: query });
   });
 
 exports.getAll = (Model, modelName) =>
