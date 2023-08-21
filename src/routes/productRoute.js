@@ -17,6 +17,10 @@ const {
   resizeProductImges,
 } = require("../controllers/productController");
 const { protect, restrictTo } = require("../controllers/authController");
+const reviewRouter = require("./reviewRoute");
+
+/// Nested Route to nest child reviews inside parent products
+productRouter.use("/:productId/reviews", reviewRouter);
 
 productRouter
   .route("/")

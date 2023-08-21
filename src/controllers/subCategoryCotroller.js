@@ -6,6 +6,18 @@ exports.setCategoryIdToBody = (req, res, next) => {
   if (!req.body.category) req.body.category = req.params.categoryId;
   next();
 };
+
+// @desc:     Nested Route
+// @route:    GET  /api/v1/categories/:categoryId/subCategoris
+module.exports.createFilterObject = (req, res, next) => {
+  let filterObject = {};
+  if (req.params.categoryId) {
+    filterObject = { category: req.params.categoryId };
+  }
+  req.filterObj = filterObject;
+  next();
+};
+
 // @desc:     Create subCategory
 // @route:    POST /api/v1/subCategories
 // @route:    POST /api/v1/categories/categoryId/subcategories : to Create subCategories for category by nestedRoute

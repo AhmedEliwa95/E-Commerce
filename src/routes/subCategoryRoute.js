@@ -6,7 +6,7 @@ const {
   updateSubCategory,
   deleteSubCategory,
   setCategoryIdToBody,
-  createFilterObj,
+  createFilterObject,
   // getSubCategoriesForCategory,
 } = require("../controllers/subCategoryCotroller");
 
@@ -30,7 +30,7 @@ subCategoryRouter
     createSubCategoryValidator,
     createSubCategory
   )
-  .get(getSubCategories);
+  .get(createFilterObject, getSubCategories);
 
 subCategoryRouter
   .route("/:id")

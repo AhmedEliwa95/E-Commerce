@@ -1,12 +1,14 @@
 const express = require("express");
 
-const reviewRouter = express.Router();
+const reviewRouter = express.Router({ mergeParams: true });
 const {
   createReview,
   getReviews,
   getReview,
   updateReview,
   deleteReview,
+  createFilterObject,
+  setProductIdAndUserIdToBody,
 } = require("../controllers/reviewController");
 
 const {
@@ -22,8 +24,14 @@ const { protect, restrictTo } = require("../controllers/authController");
 
 reviewRouter
   .route("/")
-  .post(protect, restrictTo("user"), createReviewValidator, createReview)
-  .get(getReviews);
+  .post(
+    protect,
+    restrictTo("user"),
+    setProductIdAndUserIdToBody,
+    createReviewValidator,
+    createReview
+  )
+  .get(createFilterObject, getReviews);
 
 reviewRouter
   .route("/:id")
