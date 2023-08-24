@@ -60,7 +60,7 @@ exports.deleteReviewValidator = [
       const review = await Review.findById(val);
       if (!review) throw new Error("Invalid Review ID");
       if (req.user.role === "user") {
-        if (review.user.toString() !== req.user._id.toString()) {
+        if (review.user._id.toString() !== req.user._id.toString()) {
           throw new Error("not allowed to do this action");
         }
       }

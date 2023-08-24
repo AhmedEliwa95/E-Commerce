@@ -2,17 +2,38 @@ const asyncHandler = require("express-async-handler");
 const APIError = require("./apiError");
 const APIFeatures = require("./APIFeature");
 
+// exports.deleteOne = (Model) =>
+//   asyncHandler(async (req, res, next) => {
+//     const { id } = req.params;
+
+//     const document = Model.findOne({ _id: id });
+
+//     if (!document) {
+//       next(new APIError(`No Document with this ID: ${id}`, 404));
+//     }
+//     await document.deleteOne();
+//     res.status(204).send();
+//   });
+
 exports.deleteOne = (Model) =>
   asyncHandler(async (req, res, next) => {
     const { id } = req.params;
 
-    const document = await Model.findOneAndDelete({ _id: id });
+    const deletedDocument = await Model.findOneAndDelete({ _id: id });
+    if (deletedDocument) {
+      if (Model.modelName === "Review") {
+        const productId = deletedDocument.product;
 
-    if (!document) {
-      next(new APIError(`No Document with this ID: ${id}`, 404));
+        // Recalculate average ratings and quantity for the product
+        await Model.calcAverageRatingAndQuantity(productId);
+      }
+
+      res
+        .status(204)
+        .json({ item: `${deletedDocument._id} : successfully deleted` });
+    } else {
+      return next(new APIError(`No Document for this id ${id}`, 404));
     }
-
-    res.status(204).send();
   });
 
 exports.updateOne = (Model) =>
@@ -29,6 +50,8 @@ exports.updateOne = (Model) =>
         new APIError(`No Document with this ID: ${req.params.id}`, 404)
       );
     }
+
+    updatedDocument.save();
 
     res.status(200).send({ data: updatedDocument });
   });
