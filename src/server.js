@@ -15,6 +15,7 @@ const productRouter = require("./routes/productRoute");
 const userRouter = require("./routes/userRoute");
 const authRouter = require("./routes/authRoute");
 const reviewRouter = require("./routes/reviewRoute");
+const wishListRouter = require("./routes/wishListRoute");
 
 dbConnection();
 
@@ -40,6 +41,7 @@ app.use("/api/v1/products", productRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/reviews", reviewRouter);
+app.use("/api/v1/wishList", wishListRouter);
 
 /// to handle Forigin Routes
 app.all("*", (req, res, next) => {

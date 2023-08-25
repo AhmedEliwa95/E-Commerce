@@ -3,47 +3,57 @@ const { default: slugify } = require("slugify");
 
 const mongoose = require("mongoose");
 
-const userSchema = mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, "User name required"],
-    trim: true,
+const userSchema = mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: [true, "User name required"],
+      trim: true,
+    },
+    slug: {
+      type: String,
+      lowercase: true,
+    },
+    email: {
+      type: String,
+      required: [true, "User email is required"],
+      unique: [true, "This email have been registerd"],
+      lowercase: true,
+    },
+    phone: {
+      type: String,
+    },
+    profileImg: {
+      type: String,
+    },
+    password: {
+      type: String,
+      required: [true, "User password required"],
+      minlength: [8, "User password must be greater than 8 chars"],
+    },
+    passwordChangedAt: Date,
+    passwordResetCode: String,
+    passwordResetExpired: Date,
+    passwordResetVerified: Boolean,
+    role: {
+      type: String,
+      enum: ["user", "admin", "manager"],
+      default: "user",
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+    wishList: [
+      // Child Refernce (One Child User : Many Parents Products)
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: "Product",
+      },
+    ],
   },
-  slug: {
-    type: String,
-    lowercase: true,
-  },
-  email: {
-    type: String,
-    required: [true, "User email is required"],
-    unique: [true, "This email have been registerd"],
-    lowercase: true,
-  },
-  phone: {
-    type: String,
-  },
-  profileImg: {
-    type: String,
-  },
-  password: {
-    type: String,
-    required: [true, "User password required"],
-    minlength: [8, "User password must be greater than 8 chars"],
-  },
-  passwordChangedAt: Date,
-  passwordResetCode: String,
-  passwordResetExpired: Date,
-  passwordResetVerified: Boolean,
-  role: {
-    type: String,
-    enum: ["user", "admin", "manager"],
-    default: "user",
-  },
-  active: {
-    type: Boolean,
-    default: true,
-  },
-});
+  { timestamps: true }
+);
 
 // @desc: Hashing the Password & slugify the Name
 userSchema.pre("save", async function (next) {
