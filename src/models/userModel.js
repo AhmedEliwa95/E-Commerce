@@ -51,6 +51,23 @@ const userSchema = mongoose.Schema(
         ref: "Product",
       },
     ],
+    addresses: [
+      {
+        id: {
+          // to generte new uniqe ID
+          type: mongoose.Schema.Types.ObjectId,
+        },
+        alias: {
+          type: String,
+          default: "Home",
+          enum: ["Home", "Work"],
+        },
+        details: String,
+        phone: String,
+        city: String,
+        postalCode: String,
+      },
+    ],
   },
   { timestamps: true }
 );

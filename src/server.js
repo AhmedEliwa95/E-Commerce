@@ -16,6 +16,7 @@ const userRouter = require("./routes/userRoute");
 const authRouter = require("./routes/authRoute");
 const reviewRouter = require("./routes/reviewRoute");
 const wishListRouter = require("./routes/wishListRoute");
+const addressRouter = require("./routes/addressRoute");
 
 dbConnection();
 
@@ -42,6 +43,7 @@ app.use("/api/v1/users", userRouter);
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/reviews", reviewRouter);
 app.use("/api/v1/wishList", wishListRouter);
+app.use("/api/v1/addresses", addressRouter);
 
 /// to handle Forigin Routes
 app.all("*", (req, res, next) => {

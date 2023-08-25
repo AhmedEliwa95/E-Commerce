@@ -45,9 +45,9 @@ exports.removeProductFromWishList = expressAsyncHandler(
       return next(new APIError("no user", 400));
     }
 
-    res.status(201).send({
+    res.status(204).send({
       status: "Success",
-      message: "Product added Successfully to your wishList",
+      message: "Product removed Successfully from your wishList",
       data: user.wishList,
     });
   }
