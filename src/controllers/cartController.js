@@ -2,13 +2,15 @@ const expressAsyncHandler = require("express-async-handler");
 const Cart = require("../models/cartModel");
 const Product = require("../models/productModel");
 const APIError = require("../utils/apiError");
+const Coupon = require("../models/couponModel");
 
 const calcTotalCartPrice = (cart) => {
   let totalPrice = 0;
   cart.cartItems.forEach((item) => {
     totalPrice += item.quantity * item.price;
   });
-  cart.totalCartPrice = totalPrice;
+  cart.totalCartPrice = totalPrice.toFixed(2);
+  cart.totalPriceAfterDiscount = undefined;
 };
 
 // @desc:    Adding Product to a shopping cart
@@ -91,6 +93,77 @@ exports.removeProductfromCart = expressAsyncHandler(async (req, res, next) => {
   res.status(204).json({
     status: "Success",
     message: "the product has been deleted successfully from your cart",
+    results: cart.cartItems.length,
+    data: cart,
+  });
+});
+
+// @desc:    Clear my shopping cart
+// @route:   DELETE /api/v1/carts
+// @access:  Private/Protect-User
+exports.clearMyCart = expressAsyncHandler(async (req, res, next) => {
+  //1) fund the cart
+  const cart = await Cart.findOneAndDelete({ user: req.user._id });
+  res.status(204).send(cart);
+});
+
+// @desc:    Update cartItem quanity
+// @route:   PUT /api/v1/carts/cartId
+// @access:  Private/Protect-User
+exports.updateCartItemQuantiy = expressAsyncHandler(async (req, res, next) => {
+  const { quantity } = req.body;
+
+  const cart = await Cart.findOne({ user: req.user._id });
+  if (!cart) return next(new APIError("no cart for this user", 404));
+
+  const productIndex = cart.cartItems.findIndex(
+    (item) => item._id.toString() === req.params.cartId
+  );
+  if (productIndex !== -1) {
+    const cartItem = cart.cartItems[productIndex];
+    cartItem.quantity = quantity * 1;
+    cart.cartItems[productIndex] = cartItem;
+  } else {
+    return next(new APIError(`no cartItem for this id:${req.params.cartId}`));
+  }
+  calcTotalCartPrice(cart);
+  await cart.save();
+
+  res.status(200).json({
+    status: "Success",
+    message: "Your Shopping Cart",
+    results: cart.cartItems.length,
+    data: cart,
+  });
+});
+
+// @desc:    Apply copoun on a shopping cart
+// @route:   PUT /api/v1/carts/applyCoupon
+// @access:  Private/Protect-User
+exports.applyCoupon = expressAsyncHandler(async (req, res, next) => {
+  //1) get coupon from req.body
+  const { couponName } = req.body;
+  const coupon = await Coupon.findOne({
+    name: couponName,
+    expire: { $gt: Date.now() },
+  });
+  //2) check if not coupon
+  if (!coupon) {
+    return next(new APIError("is invalid or expired", 404));
+  }
+  //3)find cart
+  const cart = await Cart.findOne({ user: req.user._id });
+  //4) set the priceAfterDiscount
+  cart.totalPriceAfterDiscount = (
+    cart.totalCartPrice *
+    (1 - coupon.discount)
+  ).toFixed(2);
+
+  await cart.save();
+
+  res.status(200).json({
+    status: "Success",
+    message: "Your Shopping Cart",
     results: cart.cartItems.length,
     data: cart,
   });
