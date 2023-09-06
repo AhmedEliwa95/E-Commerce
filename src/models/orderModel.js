@@ -30,6 +30,12 @@ const orderSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    shippingAddress: {
+      details: String,
+      phone: String,
+      city: String,
+      postalCode: String,
+    },
     totalOrderPrice: {
       type: Number,
       default: 0,
@@ -54,3 +60,5 @@ const orderSchema = new mongoose.Schema(
 );
 
 const Order = mongoose.model("Order", orderSchema);
+
+module.exports = Order;
