@@ -50,7 +50,7 @@ exports.createCashOrder = expressAsyncHandler(async (req, res, next) => {
       },
     }));
 
-    await Product.bulkWrite(bulkOptions);
+    await Product.bulkWrite(bulkOptions, {});
 
     // 5) clear the cart
     await Cart.findByIdAndDelete(req.params.cartId);
@@ -58,3 +58,21 @@ exports.createCashOrder = expressAsyncHandler(async (req, res, next) => {
 
   res.status(201).json({ status: "Success", data: order });
 });
+
+// helper function to filter the logged user orders only
+exports.filterOrdersForLoggedUser = expressAsyncHandler(
+  async (req, res, next) => {
+    if (req.user.role === "user") req.filterObj = { user: req.user._id };
+    next();
+  }
+);
+
+// @desc:    Get all orders for admin or managers, or get only the order belonget to the logged user with role user
+// @route:   POST /api/v1/orders
+// @access:  Private: Protected-User, Admin, Manager
+exports.getAllOrders = factory.getAll(Order);
+
+// @desc:    Get order by ID
+// @route:   POST /api/v1/orders/cartId
+// @access:  Private: Protected-User, Admin, Manager
+exports.getOrder = factory.getOne(Order);
