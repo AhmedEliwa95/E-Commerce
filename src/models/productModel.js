@@ -89,6 +89,9 @@ productSchema.pre("save", function (next) {
 
 // return the url in the queries
 const setImageURL = (doc) => {
+  // fixing pug populating products inside order.cartItems
+  if (!doc.images) return;
+
   if (doc.imageCover) {
     doc.imageCover = `${process.env.BASE_URL}/products/${doc.imageCover}`;
   }
