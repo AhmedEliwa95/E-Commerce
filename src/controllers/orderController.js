@@ -76,3 +76,41 @@ exports.getAllOrders = factory.getAll(Order);
 // @route:   POST /api/v1/orders/cartId
 // @access:  Private: Protected-User, Admin, Manager
 exports.getOrder = factory.getOne(Order);
+
+// @desc:    Update order paid status by ID
+// @route:   PUT /api/v1/orders/orderId
+// @access:  Private: , Admin, Manager
+exports.updateOrderToPaid = expressAsyncHandler(async (req, res, next) => {
+  const order = await Order.findByIdAndUpdate(req.params.orderId);
+  if (!order) {
+    return next(
+      new APIError(401, `no order with this orderId: ${req.params.orderId}`)
+    );
+  }
+
+  order.isPaid = true;
+  order.paidAt = Date.now();
+
+  const updatedOrder = await order.save();
+
+  res.status(200).json({ status: "Success", data: updatedOrder });
+});
+
+// @desc:    Update order delivered status by ID
+// @route:   PUT /api/v1/orders/orderId
+// @access:  Private: , Admin, Manager
+exports.updateOrderToDelivered = expressAsyncHandler(async (req, res, next) => {
+  const order = await Order.findByIdAndUpdate(req.params.orderId);
+  if (!order) {
+    return next(
+      new APIError(401, `no order with this orderId: ${req.params.orderId}`)
+    );
+  }
+
+  order.isDelivered = true;
+  order.deliveredAt = Date.now();
+
+  const updatedOrder = await order.save();
+
+  res.status(200).json({ status: "Success", data: updatedOrder });
+});
