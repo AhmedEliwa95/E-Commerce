@@ -1,3 +1,4 @@
+const stripe = require("stripe")(process.env.STRIPE_SECRET);
 const expressAsyncHandler = require("express-async-handler");
 const factory = require("../utils/handlerFactory");
 const APIError = require("../utils/apiError");
@@ -113,4 +114,48 @@ exports.updateOrderToDelivered = expressAsyncHandler(async (req, res, next) => {
   const updatedOrder = await order.save();
 
   res.status(200).json({ status: "Success", data: updatedOrder });
+});
+
+// @desc:    Create CheckOut Session from stripe and send it as a response to allow it for the frontend to use it by the public_key
+// @route:   GET /api/v1/orders/checkout-session/cartId
+// @access:  Private: user
+exports.checkoutSession = expressAsyncHandler(async (req, res, next) => {
+  /// app settings
+  const taxPrice = 0;
+  const shippingPrice = 0;
+
+  // 1) get the cart
+  const cart = await Cart.findById(req.params.cartId);
+  if (!cart) return next(new APIError("no cart with this cartId", 404));
+
+  // 2) check price
+  const cartPrice = cart.totalPriceAfterDiscount
+    ? cart.totalPriceAfterDiscount
+    : cart.totalCartPrice;
+
+  // 3) create order with cach payment method
+  const totalOrderPrice = cartPrice + taxPrice + shippingPrice;
+
+  const session = await stripe.checkout.sessions.create({
+    line_items: [
+      {
+        named: req.user.name,
+        amount: totalOrderPrice * 100,
+        currency: "egp",
+        quantity: 1,
+      },
+    ],
+    mode: "payement",
+    success_url: `${req.protocol}://${req.get("host")}/orders`, ///req.protocol: http or https, req.get('host):
+    cancel_url: `${req.protocol}://${req.get("host")}/cart`,
+    customer_email: req.user.email,
+    client_reference_id: req.params.cartId,
+    metadata: req.body.shippingAddress,
+  });
+
+  //4) send the session
+  res.status(200).json({
+    status: "Success",
+    session,
+  });
 });
