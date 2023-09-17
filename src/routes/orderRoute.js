@@ -12,7 +12,7 @@ const {
 const orderRouter = express.Router();
 
 orderRouter.get(
-  "/api/v1/orders/checkout-session/cartId",
+  "/checkout-session/:cartId",
   protect,
   restrictTo("user"),
   checkoutSession

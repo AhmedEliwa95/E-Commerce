@@ -4,6 +4,8 @@ const express = require("express");
 // eslint-disable-next-line no-unused-vars
 const dotenv = require("dotenv").config({ path: "./config/config.env" });
 const morgan = require("morgan");
+const cors = require("cors");
+
 const dbConnection = require("../config/database");
 const APIError = require("./utils/apiError");
 const globalError = require("./middlewares/errorMiddleware");
@@ -14,6 +16,10 @@ dbConnection();
 
 // Create Express APP
 const app = express();
+
+/// to make other domains to use my own API, like any frontend app that will try to call my endpoints
+app.use(cors());
+app.options("*", cors());
 
 /// Middlewares
 if (process.env.NODE_ENV === "development") {
