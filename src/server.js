@@ -5,6 +5,7 @@ const express = require("express");
 const dotenv = require("dotenv").config({ path: "./config/config.env" });
 const morgan = require("morgan");
 const cors = require("cors");
+const compression = require("compression");
 
 const dbConnection = require("../config/database");
 const APIError = require("./utils/apiError");
@@ -17,10 +18,12 @@ dbConnection();
 // Create Express APP
 const app = express();
 
-/// to make other domains to use my own API, like any frontend app that will try to call my endpoints
+/// to make other domains to access my App APIs, like any frontend app that will try to call my endpoints
 app.use(cors());
 app.options("*", cors());
 
+// to compress all responses
+app.use(compression);
 /// Middlewares
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
