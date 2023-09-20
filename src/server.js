@@ -23,7 +23,7 @@ app.use(cors());
 app.options("*", cors());
 
 // to compress all responses
-app.use(compression);
+app.use(compression());
 /// Middlewares
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
