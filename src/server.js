@@ -13,7 +13,7 @@ const globalError = require("./middlewares/errorMiddleware");
 
 const mountRoutes = require("./routes");
 
-dbConnection();
+// dbConnection();
 
 // Create Express APP
 const app = express();
@@ -48,15 +48,18 @@ app.all("*", (req, res, next) => {
 app.use(globalError);
 
 const PORT = process.env.PORT || 3000;
-const server = app.listen(PORT, () => {
-  console.log(`E-commerce App is listenning on port: ${PORT}`);
+// const server =
+dbConnection().then(() => {
+  app.listen(PORT, () => {
+    console.log(`E-commerce App is listenning on port: ${PORT}`);
+  });
 });
 
 // to handle non express asynchronus errors
-process.on("unhandledRejection", (err) => {
-  console.error(`UnhandledRejection Error: ${err.name} | ${err.message}`);
-  server.close(() => {
-    console.error(`Shutting down....`);
-    process.exit(1);
-  });
-});
+// process.on("unhandledRejection", (err) => {
+//   console.error(`UnhandledRejection Error: ${err.name} | ${err.message}`);
+//   server.close(() => {
+//     console.error(`Shutting down....`);
+//     process.exit(1);
+//   });
+// });
