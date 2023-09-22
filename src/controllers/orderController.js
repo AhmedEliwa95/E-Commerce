@@ -6,6 +6,7 @@ const APIError = require("../utils/apiError");
 const Order = require("../models/orderModel");
 const Cart = require("../models/cartModel");
 const Product = require("../models/productModel");
+const User = require("../models/userModel");
 
 // @desc:    create cash order for products in the cart
 // @route:   POST /api/v1/orders/cartId
@@ -165,6 +166,40 @@ exports.checkoutSession = expressAsyncHandler(async (req, res, next) => {
   });
 });
 
+const createCardOrder = async (session) => {
+  const cartId = session.client_reference_id;
+  const shippingAddress = session.metadata;
+  const orderPrice = session.amount_total / 100;
+
+  const cart = await Cart.findById(cartId);
+  const user = await User.findOne({ email: session.customer_details.email });
+
+  // create order with card payement method
+  const order = await Order.create({
+    user: user._id,
+    cartItems: cart.cartItems,
+    totalOrderPrice: orderPrice,
+    shippingAddress,
+    isPaid: true,
+    paidAt: Date.now(),
+    paymentMethod: "card",
+  });
+
+  // 4) decrement thee product auantity
+  if (order) {
+    const bulkOptions = cart.cartItems.map((item) => ({
+      updateOne: {
+        filter: { _id: item.product },
+        update: { $inc: { quantity: -item.quantity, sold: +item.quantity } },
+      },
+    }));
+
+    await Product.bulkWrite(bulkOptions, {});
+
+    // 5) clear the cart
+    await Cart.findByIdAndDelete(cart._id);
+  }
+};
 // @desc:    Create webhook checkout
 // @route:   GET /api/v1/orders/webhook-checkout
 // @access:  Private: user
@@ -183,11 +218,13 @@ exports.createWebhook = expressAsyncHandler(async (req, res, next) => {
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
+  /// handle the event to create the order
   if (event.type === "checkout.session.completed") {
-    console.log("Create Order Here .....");
+    /// Create Order from the session sent
+    createCardOrder(event.data.object);
   }
-  // // Handle the event
-  // console.log(`Unhandled event type ${event.type}`);
+
+  res.status(200).json({ recieved: true });
 
   // // Return a 200 response to acknowledge receipt of the event
   // res.send();
