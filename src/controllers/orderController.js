@@ -221,7 +221,7 @@ exports.createWebhook = expressAsyncHandler(async (req, res, next) => {
   /// handle the event to create the order
   if (event.type === "checkout.session.completed") {
     /// Create Order from the session sent
-    createCardOrder(event.data.object);
+    await createCardOrder(event.data.object);
   }
 
   res.status(200).json({ recieved: true });
