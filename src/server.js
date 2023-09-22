@@ -12,6 +12,7 @@ const APIError = require("./utils/apiError");
 const globalError = require("./middlewares/errorMiddleware");
 
 const mountRoutes = require("./routes");
+const { createWebhook } = require("./controllers/orderController");
 
 // dbConnection();
 
@@ -24,6 +25,13 @@ app.options("*", cors());
 
 // to compress all responses
 app.use(compression());
+
+// webhook checkout
+app.post(
+  "/webhook-checkout",
+  express.raw({ type: "application/json" }),
+  createWebhook
+);
 /// Middlewares
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));

@@ -164,3 +164,31 @@ exports.checkoutSession = expressAsyncHandler(async (req, res, next) => {
     session,
   });
 });
+
+// @desc:    Create webhook checkout
+// @route:   GET /api/v1/orders/webhook-checkout
+// @access:  Private: user
+exports.createWebhook = expressAsyncHandler(async (req, res, next) => {
+  const sig = req.headers["stripe-signature"];
+
+  let event;
+
+  try {
+    event = stripe.webhooks.constructEvent(
+      req.body,
+      sig,
+      process.env.WEBHOOK_SECRET
+    );
+  } catch (err) {
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  if (event.type === "checkout.session.completes") {
+    console.log("Create Order Here .....");
+  }
+  // Handle the event
+  console.log(`Unhandled event type ${event.type}`);
+
+  // Return a 200 response to acknowledge receipt of the event
+  res.send();
+});
