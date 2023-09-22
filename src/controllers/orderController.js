@@ -183,7 +183,7 @@ exports.createWebhook = expressAsyncHandler(async (req, res, next) => {
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
-  if (event.type === "checkout.session.complete") {
+  if (event.type === "checkout.session.completed") {
     console.log("Create Order Here .....");
   }
   // // Handle the event
