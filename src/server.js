@@ -6,6 +6,7 @@ const dotenv = require("dotenv").config({ path: "./config/config.env" });
 const morgan = require("morgan");
 const cors = require("cors");
 const compression = require("compression");
+const { rateLimit } = require("express-rate-limit");
 
 const dbConnection = require("../config/database");
 const APIError = require("./utils/apiError");
@@ -39,10 +40,20 @@ if (process.env.NODE_ENV === "development") {
   console.log(`mode: ${process.env.NODE_ENV}`);
 }
 // to accept json content & limiting the size of the request body to 20kb to save the server memory
-app.use(express.json({ limit: "20" }));
+app.use(express.json({ limit: "100" }));
 
 // to serve the static files from the server like images
 app.use(express.static(path.join(__dirname, "uploads")));
+
+// Rate Limiter
+app.use(
+  ["/api/v1/auth/signup", "/api/v1/auth/forgotPassword", "/api/v1/auth/login"],
+  rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minites
+    limit: 3,
+    message: "Too many accounts created from this IP",
+  })
+);
 
 //////// Mount Routes \\\\\\\\\\\
 mountRoutes(app);
