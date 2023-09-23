@@ -7,6 +7,7 @@ const morgan = require("morgan");
 const cors = require("cors");
 const compression = require("compression");
 const { rateLimit } = require("express-rate-limit");
+const hpp = require("hpp");
 
 const dbConnection = require("../config/database");
 const APIError = require("./utils/apiError");
@@ -34,6 +35,7 @@ app.post(
   express.raw({ type: "application/json" }),
   createWebhook
 );
+
 /// Middlewares
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
@@ -50,10 +52,13 @@ app.use(
   ["/api/v1/auth/signup", "/api/v1/auth/forgotPassword", "/api/v1/auth/login"],
   rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minites
-    limit: 3,
+    limit: 6,
     message: "Too many accounts created from this IP",
   })
 );
+
+/// hpp to avoid crashing the app in case of duplicating the paramaters
+app.use(hpp());
 
 //////// Mount Routes \\\\\\\\\\\
 mountRoutes(app);
