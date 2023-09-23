@@ -8,6 +8,7 @@ const cors = require("cors");
 const compression = require("compression");
 const { rateLimit } = require("express-rate-limit");
 const hpp = require("hpp");
+const mongoSanitize = require("express-mongo-sanitize");
 
 const dbConnection = require("../config/database");
 const APIError = require("./utils/apiError");
@@ -41,11 +42,15 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
   console.log(`mode: ${process.env.NODE_ENV}`);
 }
+
 // to accept json content & limiting the size of the request body to 20kb to save the server memory
 app.use(express.json({ limit: "100" }));
 
 // to serve the static files from the server like images
 app.use(express.static(path.join(__dirname, "uploads")));
+
+// Sanitize queries from $
+app.use(mongoSanitize());
 
 // Rate Limiter
 app.use(
@@ -58,7 +63,11 @@ app.use(
 );
 
 /// hpp to avoid crashing the app in case of duplicating the paramaters
-app.use(hpp());
+app.use(
+  hpp({
+    whitelist: ["price", "sold", "quantity", "ratingsAverage", "qyantity"],
+  })
+);
 
 //////// Mount Routes \\\\\\\\\\\
 mountRoutes(app);
