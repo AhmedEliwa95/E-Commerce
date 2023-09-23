@@ -14,6 +14,7 @@ const globalError = require("./middlewares/errorMiddleware");
 const mountRoutes = require("./routes");
 const { createWebhook } = require("./controllers/orderController");
 
+// this backend app has hosted on serverless cloud: Cyclic so we need to call the connection firstly
 // dbConnection();
 
 // Create Express APP
@@ -23,10 +24,10 @@ const app = express();
 app.use(cors());
 app.options("*", cors());
 
-// to compress all responses
+// to compress all responses to reduce the size of the body
 app.use(compression());
 
-// webhook checkout
+// webhook checkout: to use it inside the ordering by card payement method
 app.post(
   "/webhook-checkout",
   express.raw({ type: "application/json" }),
@@ -37,8 +38,8 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
   console.log(`mode: ${process.env.NODE_ENV}`);
 }
-// to accept json content
-app.use(express.json());
+// to accept json content & limiting the size of the request body to 20kb to save the server memory
+app.use(express.json({ limit: "20" }));
 
 // to serve the static files from the server like images
 app.use(express.static(path.join(__dirname, "uploads")));
